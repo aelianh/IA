@@ -9,7 +9,9 @@ public class AI : MonoBehaviour
     {
         Patrolling,
         Chasing,
-        Travelling
+        Travelling,
+        Waiting,
+        Attacking
     }
 
     public State currentState;
@@ -20,8 +22,15 @@ public class AI : MonoBehaviour
     int destinationIndex = 0;
     public Transform player;
     [SerializeField] float visionRange;
-    [SerializeField]float patrolRange = 10f;
+    [SerializeField] [Range(0, 369)]
+    float visionAngle;
+
+    [SerializeField] LayerMask obstacleMask;
+
+    [SerializeField] float patrolRange = 10f;
     [SerializeField] Transform patrolZone;
+
+
 
 
     void Awake()
@@ -55,6 +64,12 @@ public class AI : MonoBehaviour
             default:
                 Chase();
             break;
+            case State.Waiting:
+                Waiting();
+            break;
+            case State.Attacking:
+                Attacking();
+            break;
         }
     }
 
@@ -83,8 +98,7 @@ public class AI : MonoBehaviour
             Debug.DrawRay(randomPosition, Vector3.up * 5, Color.blue, 5f);
         }
 
-
-        if(Vector3.Distance(transform.position, player.position) < visionRange)
+        if(FindTarget())
         {
             currentState = State.Chasing;
         }
@@ -126,10 +140,38 @@ public class AI : MonoBehaviour
     {
         agent.destination = player.position;
 
-        if(Vector3.Distance(transform.position, player.position) > visionRange)
+        if(!FindTarget())
         {
             currentState = State.Patrolling;
         }
+    }
+
+    void Attacking()
+    {
+
+    }
+
+    void Waiting()
+    {
+        
+    }
+
+    bool FindTarget()
+    {
+        if(Vector3.Distance(transform.position, player.position) < visionRange)
+        {
+            Vector3 directionToTarget  = (player.position - transform.position).normalized;
+            if(Vector3.Angle(transform.forward, directionToTarget) < visionAngle / 2)
+            {
+                float distanceToTarget = Vector3.Distance(transform.position, player.position);
+                if(!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     void OnDrawGizmos() 
