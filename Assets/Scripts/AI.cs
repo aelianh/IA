@@ -25,10 +25,18 @@ public class AI : MonoBehaviour
     [SerializeField] [Range(0, 369)]
     float visionAngle;
 
+    [SerializeField] float hitRange;
+
     [SerializeField] LayerMask obstacleMask;
 
     [SerializeField] float patrolRange = 10f;
     [SerializeField] Transform patrolZone;
+
+    [SerializeField] float startWaitTime;
+    [SerializeField] float waitTime;
+    
+    [SerializeField] float startWaitChaseTime;
+    [SerializeField] float waitChaseTime;
 
 
 
@@ -45,6 +53,11 @@ public class AI : MonoBehaviour
         currentState = State.Patrolling;
         
         destinationIndex = Random.Range(0, destinationPoints.Length);
+
+        waitTime = startWaitTime;
+
+        waitChaseTime = startWaitChaseTime; 
+        
     }
 
     // Update is called once per frame
@@ -148,12 +161,32 @@ public class AI : MonoBehaviour
 
     void Attacking()
     {
+        agent.destination = player.position;
+        Debug.Log("Attack");
 
+                if(Vector3.Distance(transform.position, player.position) > hitRange)
+        {
+            currentState = State.Chasing;
+        }
+        
     }
 
     void Waiting()
     {
-        
+                agent.destination = transform.position;
+        if(waitChaseTime <= 0)
+        {
+            waitChaseTime = startWaitChaseTime;
+            currentState = State.Patrolling;
+        }
+        else
+        {
+            waitChaseTime -= Time.deltaTime;
+        }
+        if(Vector3.Distance(transform.position, player.position) < visionRange)
+        {
+            currentState = State.Chasing;
+        }
     }
 
     bool FindTarget()
