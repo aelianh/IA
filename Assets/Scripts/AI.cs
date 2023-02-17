@@ -9,7 +9,7 @@ public class AI : MonoBehaviour
     {
         Patrolling,
         Chasing,
-        Travelling,
+        WaitChase,
         Waiting,
         Attacking
     }
@@ -30,14 +30,13 @@ public class AI : MonoBehaviour
     [SerializeField] LayerMask obstacleMask;
 
     [SerializeField] float patrolRange = 10f;
-    [SerializeField] Transform patrolZone;
+    private Transform patrolZone;
 
-    [SerializeField] float startWaitTime;
-    [SerializeField] float waitTime;
+    [SerializeField] float startWaitingTime;
+    private float waitingTime;
     
     [SerializeField] float startWaitChaseTime;
-    [SerializeField] float waitChaseTime;
-
+    private float waitChaseTime;
 
 
 
@@ -54,7 +53,7 @@ public class AI : MonoBehaviour
         
         destinationIndex = Random.Range(0, destinationPoints.Length);
 
-        waitTime = startWaitTime;
+        waitingTime = startWaitingTime;
 
         waitChaseTime = startWaitChaseTime; 
         
@@ -71,8 +70,9 @@ public class AI : MonoBehaviour
             case State.Chasing:
                 Chase();
             break;
-            case State.Travelling:
-                Travel();
+
+            case State.WaitChase:
+                WaitChase();
             break;
             default:
                 Chase();
@@ -116,7 +116,6 @@ public class AI : MonoBehaviour
             currentState = State.Chasing;
         }
 
-        currentState = State.Travelling;
     }
 
 
@@ -134,14 +133,18 @@ public class AI : MonoBehaviour
     }
 
 
-    void Travel()
-
+    void WaitChase()
     {
-        if(agent.remainingDistance <= 0.2f)
+        agent.destination = transform.position;
+        if(waitChaseTime <= 0)
         {
+            waitChaseTime = startWaitChaseTime;
             currentState = State.Patrolling;
         }
-
+        else
+        {
+            waitChaseTime -= Time.deltaTime;
+        }
         if(Vector3.Distance(transform.position, player.position) < visionRange)
         {
             currentState = State.Chasing;
