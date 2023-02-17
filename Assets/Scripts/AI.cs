@@ -18,17 +18,23 @@ public class AI : MonoBehaviour
 
     NavMeshAgent agent;
 
-    public Transform[] patrolPoints;
     public Transform player;
+
+    public Transform[] patrolPoints;
+
     [SerializeField] float visionRange;
     [SerializeField] float patrolRange = 10f; 
     [SerializeField] Transform patrolZone;
     [SerializeField] float visionAngle;
     [SerializeField] [Range(0, 360)]
+
     public LayerMask obstaclesMask;
+
     public Transform[] points;
     private int destinationPoint = 0;
     public float timer = 5.0f;
+
+    public float attackRange = 5f;
 
 
     void Awake()
@@ -141,11 +147,17 @@ public class AI : MonoBehaviour
         {
             currentState = State.Chasing;
         }
+
     }
 
     void Chase()
     {
         agent.destination = player.position;
+
+        if(Vector3.Distance(transform.position, player.position) < attackRange)
+        {
+            currentState = State.Attacking;
+        }
 
         if(!FindTarget())
         {
@@ -165,14 +177,20 @@ public class AI : MonoBehaviour
                 timer = 5;
             }  
         }
-    }
 
-    void Attack()
-    {
         if(FindTarget())
         {
             currentState = State.Attacking;
             Debug.Log("Attack");
+        }
+    }
+
+    void Attack()
+    {
+        Debug.Log("Attack");
+        if(!FindTarget())
+        {
+            currentState = State.Patrolling;
         }
     }
 

@@ -8581,18 +8581,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
-  destinationPoints:
-  - {fileID: 284926210}
-  - {fileID: 1329908694}
-  - {fileID: 386123887}
-  - {fileID: 983597189}
-  - {fileID: 817753008}
-  - {fileID: 866602719}
+  patrolPoints: []
   player: {fileID: 519056072}
-  visionRange: 0
+  visionRange: 15
   patrolRange: 10
   patrolZone: {fileID: 1602102466}
-  visionAngle: 0
+  visionAngle: 160
   obstaclesMask:
     serializedVersion: 2
     m_Bits: 0
@@ -8603,7 +8597,7 @@ MonoBehaviour:
   - {fileID: 983597189}
   - {fileID: 817753008}
   - {fileID: 866602719}
-  countdown: 5
+  timer: 5
 --- !u!1 &814608651
 GameObject:
   m_ObjectHideFlags: 0
